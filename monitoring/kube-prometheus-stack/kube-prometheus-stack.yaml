@@ -41,4 +41,4 @@ grafana:
   dashboards:
     risingwave:
       risingwave-dashboard:
-        url: https://raw.githubusercontent.com/risingwavelabs/risingwave-operator/main/monitoring/grafana/risingwave-dashboard.json
+        url: https://raw.githubusercontent.com/risingwavelabs/risingwave-operator/wkx-hack/monitoring/grafana/risingwave-dashboard.json
