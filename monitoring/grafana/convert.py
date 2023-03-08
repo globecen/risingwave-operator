@@ -84,7 +84,7 @@ templating_list = [
 json_data["annotations"]["list"] = annotations_list
 json_data["templating"]["list"] = templating_list
 json_data["title"] = "RisingWave Dashboard"
-json_data["time"]["from"] = "now-5m"
+json_data["time"]["from"] = "now-15m"
 del json_data["__inputs"]
 
 panels_key = "panels"
@@ -92,12 +92,16 @@ datasource_key = "datasource"
 targets_key = "targets"
 expr_key = "expr"
 legend_format_key = "legendFormat"
+interval_key = "interval"
+interval_factor_key = "intervalFactor"
 
 # define "datasource"
 datasource_value = {
     "type": "prometheus",
     "uid": "prometheus"
 }
+interval_value = "30s"
+interval_factor_value = 1
 
 def contains_str(string, target):
     return target in string and target + "_" not in string and "_" + target not in string
@@ -122,6 +126,8 @@ def update_legend_format(target):
 def update_targets(targets):
     for target in targets:
         target[datasource_key] = datasource_value
+        # target[interval_key] = interval_value
+        target[interval_factor_key] = interval_factor_value
         if expr_key in target:
             update_expr(target)
         if legend_format_key in target:
@@ -130,6 +136,8 @@ def update_targets(targets):
 def update_panels(panels):
     for panel in panels:
         panel[datasource_key] = datasource_value
+        # panel[interval_key] = interval_value
+        panel[interval_factor_key] = interval_factor_value
         if targets_key in panel:
             update_targets(panel[targets_key])
         if panels_key in panel:
