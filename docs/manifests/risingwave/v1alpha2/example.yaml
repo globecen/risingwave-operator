@@ -1,0 +1,56 @@
+apiVersion: risingwave.risingwavelabs.com/v1alpha2
+kind: RisingWave
+metadata:
+  name: example
+spec:
+  metaStore:
+    etcd:
+      endpoint: etcd-endpoint
+      credentials:
+        secretName: etcd-credentials
+  stateStore:
+    s3:
+      region: us-east-1
+      bucket: s3-bucket
+      credentials:
+        secretName: s3-credentials
+  useKruiseWorkloads: false
+  syncPrometheusServiceMonitor: true
+  frontendServiceType: ClusterIP
+  additionalFrontendServiceMetadata:
+    labels:
+      frontend/service: "1"
+    annotations:
+      frontend/service: "1"
+  podTemplate:
+    metadata:
+      annotations:
+        risingwave: "1"
+      labels:
+        risingwave: "1"
+    spec:
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: test-ng
+      shareProcessNamespace: true
+      imagePullPolicy: IfNotPresent
+      additionalContainers:
+      - name: toolbox
+        image: busybox
+        command:
+        - bash
+        args:
+        - -c
+        - while 1; do sleep 100; done
+  image: ghcr.io/risingwavelabs/risingwave:v0.1.17
+  metaComponent:
+    nodeGroups:
+    - replicas: 1
+  frontendComponent:
+    nodeGroups:
+    - replicas: 1
+  computeComponent:
+    nodeGroups:
+    - replicas: 1
+  compactorComponent:
+    nodeGroups:
+    - replicas: 1

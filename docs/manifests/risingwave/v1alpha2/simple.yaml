@@ -1,0 +1,20 @@
+apiVersion: risingwave.risingwavelabs.com/v1alpha2
+kind: RisingWave
+metadata:
+  name: example
+spec:
+  image: ghcr.io/risingwavelabs/risingwave:v0.1.17
+  metaComponent:
+    disallowPrintStackTraces: true
+    logLevel: DEBUG
+    nodeGroups:
+    - replicas: 1
+  frontendComponent:
+    nodeGroups:
+    - replicas: 1
+  computeComponent:
+    nodeGroups:
+    - replicas: 1
+  compactorComponent:
+    nodeGroups:
+    - replicas: 1
