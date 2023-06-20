@@ -2,8 +2,8 @@
 
 import json
 
-input_file = "risingwave-dashboard.json"
-output_file = "risingwave-dashboard_new.json"
+input_file = "risingwave-dev-dashboard.json"
+output_file = "risingwave-dev-dashboard_new.json"
 
 f = open(input_file,encoding = "utf-8")
 content = f.read()
@@ -63,7 +63,7 @@ templating_list = [
             "uid": "prometheus"
         },
         "definition": "label_values(up{namespace=\"$namespace\", risingwave_name=~\".+\"}, risingwave_name)",
-        "description": "RisingWave pod.",
+        "description": "Reporting risingWave pod.",
         "hide": 0,
         "includeAll": False,
         "label": "RisingWave",
@@ -79,13 +79,85 @@ templating_list = [
         "skipUrlSync": False,
         "sort": 5,
         "type": "query"
+    },
+    {
+        "current": {
+            "selected": False,
+            "text": "All",
+            "value": "__all"
+        },
+        "definition": "label_values(process_cpu_seconds_total{namespace=~\"$namespace\",risingwave_name=~\"$instance\"}, instance)",
+        "description": "Reporting instance of the metric",
+        "hide": 0,
+        "includeAll": True,
+        "label": "Node",
+        "multi": True,
+        "name": "node",
+        "options": [],
+        "query": {
+            "query": "label_values(process_cpu_seconds_total{namespace=~\"$namespace\",risingwave_name=~\"$instance\"}, instance)",
+            "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": False,
+        "sort": 6,
+        "type": "query"
+    },
+    {
+        "current": {
+            "selected": False,
+            "text": "All",
+            "value": "__all"
+        },
+        "definition": "label_values(process_cpu_seconds_total{namespace=~\"$namespace\",risingwave_name=~\"$instance\"}, job)",
+        "description": "Reporting job of the metric",
+        "hide": 0,
+        "includeAll": True,
+        "label": "Job",
+        "multi": True,
+        "name": "job",
+        "options": [],
+        "query": {
+            "query": "label_values(process_cpu_seconds_total{namespace=~\"$namespace\",risingwave_name=~\"$instance\"}, job)",
+            "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": False,
+        "sort": 6,
+        "type": "query"
+    },
+    {
+        "current": {
+            "selected": False,
+            "text": "All",
+            "value": "__all"
+        },
+        "definition": "label_values(table_info{namespace=~\"$namespace\",risingwave_name=~\"$instance\"}, table_id)",
+        "description": "Reporting table id of the metric",
+        "hide": 0,
+        "includeAll": True,
+        "label": "Table",
+        "multi": True,
+        "name": "table",
+        "options": [],
+        "query": {
+            "query": "label_values(table_info{namespace=~\"$namespace\",risingwave_name=~\"$instance\"}, table_id)",
+            "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": False,
+        "sort": 6,
+        "type": "query"
     }
 ]
+
 json_data["annotations"]["list"] = annotations_list
 json_data["templating"]["list"] = templating_list
 json_data["title"] = "RisingWave Dashboard"
 json_data["time"]["from"] = "now-15m"
-del json_data["__inputs"]
 
 panels_key = "panels"
 datasource_key = "datasource"
@@ -110,12 +182,20 @@ def update_expr(target):
     if contains_str(target[expr_key], "$instance"):
         # mask $instance
         target[expr_key] = target[expr_key].replace("$instance", "XXXXXXXXXXXXXXXXX")
+    if contains_str(target[expr_key], "job=~\"$job\""):
+        # mask $job=
+        target[expr_key] = target[expr_key].replace("job=~\"$job\"", "YYYYYYYYYYYYYYYYY")
+    if contains_str(target[expr_key], "instance=~\"$node\""):
+        # mask $instance=
+        target[expr_key] = target[expr_key].replace("instance=~\"$node\"", "ZZZZZZZZZZZZZZZZZ")
     if contains_str(target[expr_key], "job"):
         target[expr_key] = target[expr_key].replace("job", "risingwave_component")
     if contains_str(target[expr_key], "instance"):
         target[expr_key] = target[expr_key].replace("instance", "pod")
     # unmask $instance
     target[expr_key] = target[expr_key].replace("XXXXXXXXXXXXXXXXX", "$instance")
+    target[expr_key] = target[expr_key].replace("YYYYYYYYYYYYYYYYY", "job=~\"$job\"")
+    target[expr_key] = target[expr_key].replace("ZZZZZZZZZZZZZZZZZ", "instance=~\"$node\"")
     
 def update_legend_format(target):
     if contains_str(target[legend_format_key], "{{job}}"):

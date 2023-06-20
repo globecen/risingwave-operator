@@ -9,28 +9,39 @@ else
 	echo "Environment variable \"RISINGWAVE_DASHBOARD_COMMIT_ID\" not found, use \"main\" as commit_id"
 fi
 
+common_url="https://raw.githubusercontent.com/risingwavelabs/risingwave/${COMMIT_ID}/grafana/common.py"
 shell_url="https://raw.githubusercontent.com/risingwavelabs/risingwave/${COMMIT_ID}/grafana/generate.sh"
-python_url="https://raw.githubusercontent.com/risingwavelabs/risingwave/${COMMIT_ID}/grafana/risingwave-dashboard.dashboard.py"
+python_url="https://raw.githubusercontent.com/risingwavelabs/risingwave/${COMMIT_ID}/grafana/risingwave-dev-dashboard.dashboard.py"
+python_url_user="https://raw.githubusercontent.com/risingwavelabs/risingwave/${COMMIT_ID}/grafana/risingwave-user-dashboard.dashboard.py"
 
-# download ./generate.sh and risingwave-dashboard.dashboard.py
-wget $shell_url -O "./generate.sh"
-wget $python_url -O "risingwave-dashboard.dashboard.py"
+# download ./generate.sh and risingwave-dev-dashboard.dashboard.py
+wget $common_url -O "./common.py"
+wget $shell_url -O "./generate_ori.sh"
+wget $python_url -O "risingwave-dev-dashboard.dashboard.py"
+wget $python_url_user -O "risingwave-user-dashboard.dashboard.py"
+
+sed '/cp/d' ./generate_ori.sh > ./generate.sh
 
 chmod +x ./generate.sh
 
-# generate risingwave-dashboard.json
+# generate risingwave-dev-dashboard.json
 DASHBOARD_NAMESPACE_FILTER_ENABLED=true DASHBOARD_RISINGWAVE_NAME_FILTER_ENABLED=true DASHBOARD_SOURCE_UID="prometheus" ./generate.sh
 
-# replace for cloud deployment, will read risingwave-dashboard.json and write the result into risingwave-dashboard_new.json
+# replace for cloud deployment, will read risingwave-dev-dashboard.json and write the result into risingwave-dev-dashboard_new.json
 python3 ./convert.py
 
 # remove intermediate files
-rm risingwave-dashboard.dashboard.py
-rm risingwave-dashboard.gen.json
+rm risingwave-dev-dashboard.dashboard.py
+rm risingwave-user-dashboard.dashboard.py
+rm risingwave-dev-dashboard.gen.json
+rm risingwave-user-dashboard.gen.json
+rm risingwave-dev-dashboard.json
+rm risingwave-user-dashboard.json
+rm ./generate_ori.sh
 rm ./generate.sh
-rm risingwave-dashboard.json
+rm ./common.py
 
 # rename
-mv risingwave-dashboard_new.json risingwave-dashboard.json
+mv risingwave-dev-dashboard_new.json risingwave-dev-dashboard.json
 
-echo "risingwave-dashboard.json updated"
+echo "risingwave-dev-dashboard.json updated"
