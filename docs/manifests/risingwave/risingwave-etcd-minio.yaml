@@ -6,10 +6,10 @@ metadata:
     app: risingwave-etcd
 spec:
   ports:
-  - port: 2388
-    name: client
-  - port: 2389
-    name: peer
+    - port: 2388
+      name: client
+    - port: 2389
+      name: peer
   selector:
     app: risingwave-etcd
 ---
@@ -35,40 +35,40 @@ spec:
           image: quay.io/coreos/etcd:latest
           imagePullPolicy: IfNotPresent
           command:
-          - /usr/local/bin/etcd
+            - /usr/local/bin/etcd
           args:
-          - "--listen-client-urls"
-          - "http://0.0.0.0:2388"
-          - "--advertise-client-urls"
-          - "http://risingwave-etcd-0:2388"
-          - "--listen-peer-urls"
-          - "http://0.0.0.0:2389"
-          - "--initial-advertise-peer-urls"
-          - "http://risingwave-etcd-0:2389"
-          - "--listen-metrics-urls"
-          - "http://0.0.0.0:2379"
-          - "--name"
-          - "risingwave-etcd"
-          - "--max-txn-ops"
-          - "999999"
-          - "--max-request-bytes"
-          - "10485760"
-          - "--auto-compaction-mode"
-          - periodic
-          - "--auto-compaction-retention"
-          - 1m
-          - "--snapshot-count"
-          - "10000"
+            - "--listen-client-urls"
+            - "http://0.0.0.0:2388"
+            - "--advertise-client-urls"
+            - "http://risingwave-etcd-0:2388"
+            - "--listen-peer-urls"
+            - "http://0.0.0.0:2389"
+            - "--initial-advertise-peer-urls"
+            - "http://risingwave-etcd-0:2389"
+            - "--listen-metrics-urls"
+            - "http://0.0.0.0:2379"
+            - "--name"
+            - "risingwave-etcd"
+            - "--max-txn-ops"
+            - "999999"
+            - "--max-request-bytes"
+            - "10485760"
+            - "--auto-compaction-mode"
+            - periodic
+            - "--auto-compaction-retention"
+            - 1m
+            - "--snapshot-count"
+            - "10000"
           env:
-          - name: ALLOW_NONE_AUTHENTICATION
-            value: "1"
+            - name: ALLOW_NONE_AUTHENTICATION
+              value: "1"
           ports:
-          - containerPort: 2389
-            name: peer
-            protocol: TCP
-          - containerPort: 2388
-            name: client
-            protocol: TCP
+            - containerPort: 2389
+              name: peer
+              protocol: TCP
+            - containerPort: 2388
+              name: client
+              protocol: TCP
 ---
 apiVersion: v1
 kind: Service
@@ -78,16 +78,16 @@ metadata:
     app: risingwave-minio
 spec:
   ports:
-  - port: 9301
-    name: service
-  - port: 9400
-    name: console
+    - port: 9301
+      name: service
+    - port: 9400
+      name: console
   selector:
     app: risingwave-minio
 ---
 apiVersion: v1
 kind: Secret
-metadata: 
+metadata:
   name: risingwave-minio-credentials
 stringData:
   username: hummockadmin
@@ -105,38 +105,38 @@ spec:
     matchLabels:
       app: risingwave-minio
   serviceName: risingwave-minio
-  template: 
+  template:
     metadata:
       labels:
         app: risingwave-minio
     spec:
       containers:
-      - name: minio
-        image: quay.io/minio/minio:latest
-        imagePullPolicy: IfNotPresent
-        command:
-        - /bin/sh
-        args:
-        - -c 
-        - mkdir -p /data/hummock001; /usr/bin/docker-entrypoint.sh server --address 0.0.0.0:9301 --console-address 0.0.0.0:9400 /data
-        env:
-        - name: MINIO_ROOT_USER
-          valueFrom: 
-            secretKeyRef:
-              name: risingwave-minio-credentials
-              key: username
-        - name: MINIO_ROOT_PASSWORD
-          valueFrom: 
-            secretKeyRef:
-              name: risingwave-minio-credentials
-              key: password
-        ports:
-        - name: service
-          containerPort: 9301
-          protocol: TCP
-        - name: console
-          containerPort: 9400
-          protocol: TCP
+        - name: minio
+          image: quay.io/minio/minio:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - mkdir -p /data/hummock001; /usr/bin/docker-entrypoint.sh server --address 0.0.0.0:9301 --console-address 0.0.0.0:9400 /data
+          env:
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: risingwave-minio-credentials
+                  key: username
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: risingwave-minio-credentials
+                  key: password
+          ports:
+            - name: service
+              containerPort: 9301
+              protocol: TCP
+            - name: console
+              containerPort: 9400
+              protocol: TCP
 ---
 apiVersion: risingwave.risingwavelabs.com/v1alpha1
 kind: RisingWave
@@ -158,53 +158,57 @@ spec:
   components:
     meta:
       nodeGroups:
-      - replicas: 1
-        name: ""
-        template:
-          spec:
-            resources:
-              limits:
-                cpu: 1
-                memory: 1Gi
-              requests:
-                cpu: 100m
-                memory: 100Mi
+        - replicas: 1
+          name: ""
+          template:
+            spec:
+              resources:
+                limits:
+                  cpu: 1
+                  memory: 1Gi
+                requests:
+                  cpu: 100m
+                  memory: 100Mi
     frontend:
       nodeGroups:
-      - replicas: 1
-        name: ""
-        template:
-          spec:
-            resources:
-              limits:
-                cpu: 1
-                memory: 1Gi
-              requests:
-                cpu: 100m
-                memory: 100Mi
+        - replicas: 1
+          name: ""
+          template:
+            spec:
+              resources:
+                limits:
+                  cpu: 1
+                  memory: 1Gi
+                requests:
+                  cpu: 100m
+                  memory: 100Mi
     compute:
       nodeGroups:
-      - replicas: 1
-        name: ""
-        template:
-          spec:
-            resources:
-              limits:
-                cpu: 1
-                memory: 1Gi
-              requests:
-                cpu: 100m
-                memory: 100Mi
+        - replicas: 1
+          name: ""
+          template:
+            spec:
+              resources:
+                limits:
+                  cpu: 1
+                  memory: 1Gi
+                requests:
+                  cpu: 100m
+                  memory: 100Mi
     compactor:
       nodeGroups:
-      - replicas: 1
-        name: ""
-        template:
-          spec:
-            resources:
-              limits:
-                cpu: 1
-                memory: 1Gi
-              requests:
-                cpu: 100m
-                memory: 100Mi
+        - replicas: 1
+          name: ""
+          template:
+            spec:
+              resources:
+                limits:
+                  cpu: 1
+                  memory: 1Gi
+                requests:
+                  cpu: 100m
+                  memory: 100Mi
+    connector:
+      nodeGroups:
+        - replicas: 1
+          name: ''

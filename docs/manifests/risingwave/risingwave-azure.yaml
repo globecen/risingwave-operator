@@ -1,6 +1,6 @@
 apiVersion: v1
 kind: Secret
-metadata: 
+metadata:
   name: risingwave-azure-blob-credentials
 stringData:
   AccountName: your-azure-account-name
@@ -24,17 +24,21 @@ spec:
   components:
     meta:
       nodeGroups:
-      - replicas: 1
-        name: ""
+        - replicas: 1
+          name: ""
     frontend:
       nodeGroups:
-      - replicas: 1
-        name: ""
+        - replicas: 1
+          name: ""
     compute:
       nodeGroups:
-      - replicas: 1
-        name: ""
+        - replicas: 1
+          name: ""
     compactor:
       nodeGroups:
-      - replicas: 1
-        name: ""
+        - replicas: 1
+          name: ""
+    connector:
+      nodeGroups:
+        - replicas: 1
+          name: ''

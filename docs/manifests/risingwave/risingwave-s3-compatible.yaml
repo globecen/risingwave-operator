@@ -24,53 +24,57 @@ spec:
   components:
     meta:
       nodeGroups:
-      - replicas: 1
-        name: ""
-        template:
-          spec:
-            resources:
-              limits:
-                cpu: 1
-                memory: 1Gi
-              requests:
-                cpu: 100m
-                memory: 100Mi
+        - replicas: 1
+          name: ""
+          template:
+            spec:
+              resources:
+                limits:
+                  cpu: 1
+                  memory: 1Gi
+                requests:
+                  cpu: 100m
+                  memory: 100Mi
     frontend:
       nodeGroups:
-      - replicas: 1
-        name: ""
-        template:
-          spec:
-            resources:
-              limits:
-                cpu: 1
-                memory: 1Gi
-              requests:
-                cpu: 100m
-                memory: 100Mi
+        - replicas: 1
+          name: ""
+          template:
+            spec:
+              resources:
+                limits:
+                  cpu: 1
+                  memory: 1Gi
+                requests:
+                  cpu: 100m
+                  memory: 100Mi
     compute:
       nodeGroups:
-      - replicas: 1
-        name: ""
-        template:
-          spec:
-            resources:
-              limits:
-                cpu: 1
-                memory: 1Gi
-              requests:
-                cpu: 100m
-                memory: 100Mi
+        - replicas: 1
+          name: ""
+          template:
+            spec:
+              resources:
+                limits:
+                  cpu: 1
+                  memory: 1Gi
+                requests:
+                  cpu: 100m
+                  memory: 100Mi
     compactor:
       nodeGroups:
-      - replicas: 1
-        name: ""
-        template:
-          spec:
-            resources:
-              limits:
-                cpu: 1
-                memory: 1Gi
-              requests:
-                cpu: 100m
-                memory: 100Mi
+        - replicas: 1
+          name: ""
+          template:
+            spec:
+              resources:
+                limits:
+                  cpu: 1
+                  memory: 1Gi
+                requests:
+                  cpu: 100m
+                  memory: 100Mi
+    connector:
+      nodeGroups:
+        - replicas: 1
+          name: ''
